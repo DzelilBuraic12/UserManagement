@@ -15,6 +15,7 @@
 .idea/
 
 # Sensitive files
+appsetting.json
 appsettings.Development.json
 appsettings.Production.json
 !appsettings.Example.json
