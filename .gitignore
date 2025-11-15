@@ -1,0 +1,38 @@
+﻿# Build results
+[Dd]ebug/
+[Rr]elease/
+[Bb]in/
+[Oo]bj/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Rider
+.idea/
+
+# Sensitive files
+appsettings.Development.json
+appsettings.Production.json
+!appsettings.Example.json
+
+# Database
+*.mdf
+*.ldf
+
+# Logs
+*.log
+[Ll]og/
+[Ll]ogs/
+
+# NuGet
+*.nupkg
+**/[Pp]ackages/*
+
+# OS files
+.DS_Store
+Thumbs.db
+Desktop.ini
