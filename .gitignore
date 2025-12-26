@@ -37,3 +37,7 @@ appsettings.Production.json
 .DS_Store
 Thumbs.db
 Desktop.ini
+
+# Angular / frontend
+frontend/node_modules
+frontend/dist
