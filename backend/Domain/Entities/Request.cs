@@ -15,12 +15,12 @@ namespace UserManagement.Domain.Entities
         public User CreatedBy { get; set; }
         [Required]
         public string Description { get; set; }
-        public  enum RequestPriority { Low = 0,Normal= 1,High = 2 }
+        public enum RequestPriority { Low = 0, Normal = 1, High = 2 }
 
         public RequestPriority Priority { get; set; } = RequestPriority.Normal;
 
         public DateTime? DueDate { get; set; }
 
-        
+
     }
 }

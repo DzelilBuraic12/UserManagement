@@ -53,18 +53,18 @@ namespace UserManagement.Services
         private string NormalizeRole(string role)
         {
             if (string.IsNullOrWhiteSpace(role))
-                return Domain.Constants.Roles.User;  
+                return Domain.Constants.Roles.User;
 
             var normalized = role.Trim();
 
             if (normalized.Equals("admin", StringComparison.OrdinalIgnoreCase))
-                return Domain.Constants.Roles.Admin;  
+                return Domain.Constants.Roles.Admin;
 
             if (normalized.Equals("technician", StringComparison.OrdinalIgnoreCase))
-                return Domain.Constants.Roles.Technician; 
+                return Domain.Constants.Roles.Technician;
 
             if (normalized.Equals("user", StringComparison.OrdinalIgnoreCase))
-                return Domain.Constants.Roles.User;  
+                return Domain.Constants.Roles.User;
 
             throw new ValidationException($"Invalid role: {role}. Allowed values: Admin, Technician, User");
         }
@@ -78,11 +78,11 @@ namespace UserManagement.Services
                 throw new ValidationException(validationResult.Errors);
             }
 
-            var normalizedEmail = dto.Email.Trim().ToLowerInvariant(); 
+            var normalizedEmail = dto.Email.Trim().ToLowerInvariant();
 
             var exist = await _db.Users.AnyAsync(u => u.Email == normalizedEmail);
 
-            if(exist)
+            if (exist)
             {
                 throw new ValidationException("Email already exist!");
             }
@@ -95,7 +95,7 @@ namespace UserManagement.Services
             user.Role = NormalizeRole(dto.Role);
             user.IsActive = true;
 
-            user.PasswordHash = _passwordHasher.HashPassword(user,dto.Password);
+            user.PasswordHash = _passwordHasher.HashPassword(user, dto.Password);
 
             await _db.Users.AddAsync(user);
 
@@ -104,8 +104,8 @@ namespace UserManagement.Services
                 await _db.SaveChangesAsync();
             }
             catch (DbUpdateException)
-            {                
-                throw new ValidationException("Email already exist!");   
+            {
+                throw new ValidationException("Email already exist!");
             }
 
             return user.Id;
@@ -122,14 +122,14 @@ namespace UserManagement.Services
                 throw new ValidationException(validationResult.Errors);
             }
 
-            var performer =  await _db.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Id == performedByUserId);
+            var performer = await _db.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Id == performedByUserId);
 
-            if(performer == null)
+            if (performer == null)
             {
                 throw new UnauthorizedAccessException();
             }
 
-            if(performedByUserId != id && !string.Equals(performer.Role, admin, StringComparison.OrdinalIgnoreCase))
+            if (performedByUserId != id && !string.Equals(performer.Role, admin, StringComparison.OrdinalIgnoreCase))
             {
                 throw new UnauthorizedAccessException();
             }
@@ -146,7 +146,7 @@ namespace UserManagement.Services
                 var current = user.Email.Trim().ToLowerInvariant();
                 var next = dto.Email.Trim().ToLowerInvariant();
 
-                if(next != current) 
+                if (next != current)
                 {
                     var exist = await _db.Users.AnyAsync(u => u.Email == next && u.Id != id);
 
@@ -160,27 +160,29 @@ namespace UserManagement.Services
                 }
             }
 
-            if(dto.FirstName != null)
+            if (dto.FirstName != null)
             {
                 user.FirstName = CapitalizeFirstLetter(dto.FirstName);
             }
 
-            if(dto.LastName != null)
+            if (dto.LastName != null)
             {
                 user.LastName = CapitalizeFirstLetter(dto.LastName);
             }
 
-            if(dto.IsActive != null && string.Equals(performer.Role, admin, StringComparison.OrdinalIgnoreCase))
+            if (dto.IsActive != null && string.Equals(performer.Role, admin, StringComparison.OrdinalIgnoreCase))
             {
                 user.IsActive = dto.IsActive.Value;
             }
+
+            user.UpdatedAt = DateTime.UtcNow;
 
             try
             {
                 await _db.SaveChangesAsync();
                 return true;
             }
-            catch(DbUpdateException)
+            catch (DbUpdateException)
             {
                 throw new InvalidOperationException("Email already in use");
             }
@@ -195,7 +197,7 @@ namespace UserManagement.Services
             var user = Domain.Constants.Roles.User;
 
 
-            if(string.IsNullOrWhiteSpace(role))
+            if (string.IsNullOrWhiteSpace(role))
             {
                 throw new ValidationException("Role cannot be empty!");
             }
@@ -204,17 +206,17 @@ namespace UserManagement.Services
 
             string targetRole;
 
-            if(normalized.Equals(admin, StringComparison.OrdinalIgnoreCase))
+            if (normalized.Equals(admin, StringComparison.OrdinalIgnoreCase))
             {
-                 targetRole = admin;
+                targetRole = admin;
             }
-            else if(normalized.Equals(technician, StringComparison.OrdinalIgnoreCase))
+            else if (normalized.Equals(technician, StringComparison.OrdinalIgnoreCase))
             {
-                 targetRole = technician;
+                targetRole = technician;
             }
-            else if(normalized.Equals(user, StringComparison.OrdinalIgnoreCase))
+            else if (normalized.Equals(user, StringComparison.OrdinalIgnoreCase))
             {
-                 targetRole = user;
+                targetRole = user;
             }
             else
             {
@@ -223,7 +225,7 @@ namespace UserManagement.Services
 
             var performer = await _db.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Id == performedByUserId);
 
-            if(performer == null || !string.Equals(performer.Role,admin, StringComparison.OrdinalIgnoreCase))
+            if (performer == null || !string.Equals(performer.Role, admin, StringComparison.OrdinalIgnoreCase))
             {
                 throw new UnauthorizedAccessException();
             }
@@ -234,17 +236,17 @@ namespace UserManagement.Services
             if (target == null)
                 return false;
 
-            if(string.Equals(target.Role,targetRole, StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(target.Role, targetRole, StringComparison.OrdinalIgnoreCase))
             {
                 return true;
             }
 
-            if(string.Equals(target.Role,admin, StringComparison.OrdinalIgnoreCase) 
+            if (string.Equals(target.Role, admin, StringComparison.OrdinalIgnoreCase)
                 && !string.Equals(targetRole, admin, StringComparison.OrdinalIgnoreCase))
             {
                 var anotherAdminExist = await _db.Users.AsNoTracking().AnyAsync(u => u.Role == admin && u.Id != target.Id);
-                
-                if(!anotherAdminExist)
+
+                if (!anotherAdminExist)
                 {
                     throw new InvalidOperationException("Cannot remove the last admin.");
                 }
@@ -252,6 +254,7 @@ namespace UserManagement.Services
 
 
             target.Role = targetRole;
+            target.UpdatedAt = DateTime.UtcNow;
 
             try
             {
@@ -264,42 +267,30 @@ namespace UserManagement.Services
             }
         }
 
-        public async Task<bool> DeleteAsync(int id, int performedByUserId)
+
+        public async Task<List<UserListDto>> GetTechniciansAsync()
         {
-            var admin = Domain.Constants.Roles.Admin;
-            
-            var performer = await _db.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Id == performedByUserId);
+            var technician = Domain.Constants.Roles.Technician;
+            var query = _db.Users.Where(u => u.Role == technician && u.IsActive);
+            var users = await query.Select(u => new UserListDto { Id = u.Id, FirstName = u.FirstName, LastName = u.LastName })
+                .ToListAsync();
 
-            if(performer == null || !string.Equals(performer.Role, admin, StringComparison.OrdinalIgnoreCase))
-            {
-                throw new UnauthorizedAccessException();
-            }
-
-            var target = await _db.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Id == id);
-
-            if (target == null)
-            {
-                return false;
-            }
-
-            if (string.Equals(target.Role, admin, StringComparison.OrdinalIgnoreCase))
-            {
-                var anotherAdminExist = await _db.Users.AsNoTracking().AnyAsync(u => u.Role == admin && u.IsActive == true && u.Id != target.Id);
-
-                if (!anotherAdminExist)
-                {
-                    throw new InvalidOperationException("Cannot delete the last admin.");
-                }
-
-
-            }
-
-            var result = await _db.Users.Where(u => u.Id == id).ExecuteDeleteAsync();
-
-            return result == 1;
-                       
+            return users;
         }
+        public async Task<List<UserReadDto>> GetAllUsersAsync()
+        {
+            var users = await _db.Users.Select(u => new UserReadDto
+            {
+                Id = u.Id,
+                FirstName = u.FirstName,
+                LastName = u.LastName,
+                Email = u.Email,
+                Role = u.Role,
+                IsActive = u.IsActive,
+            }).ToListAsync();
 
+            return users;
+        }
         public async Task<UserReadDto?> GetCurrentAsync(int userId)
         {
             var request = await _db.Users.AsNoTracking().Where(u => u.Id == userId).
@@ -324,7 +315,7 @@ namespace UserManagement.Services
                 .AsNoTracking()
                 .FirstOrDefaultAsync(u => u.Id == id);
 
-            if(user == null)
+            if (user == null)
             {
                 return null;
             }
@@ -372,7 +363,8 @@ namespace UserManagement.Services
                     "createdat" => user.OrderByDescending(u => u.CreatedAt).ThenBy(u => u.Id),
                     _ => user.OrderByDescending(u => u.Id)
                 };
-            } else
+            }
+            else
             {
                 user = sortBy switch
                 {
@@ -405,7 +397,7 @@ namespace UserManagement.Services
 
             var performer = await _db.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Id == performedByUserId);
 
-            if (performer == null || !string.Equals(performer.Role,admin , StringComparison.OrdinalIgnoreCase))
+            if (performer == null || !string.Equals(performer.Role, admin, StringComparison.OrdinalIgnoreCase))
             {
                 throw new UnauthorizedAccessException();
             }
@@ -418,25 +410,50 @@ namespace UserManagement.Services
                 return false;
             }
 
-            if(target.IsActive == false)
+            if (target.IsActive == false)
             {
                 return true;
             }
 
-            if(string.Equals(target.Role, admin, StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(target.Role, admin, StringComparison.OrdinalIgnoreCase))
             {
                 var anotherAdminExist = await _db.Users.AsNoTracking().AnyAsync(u => u.Role == admin && u.IsActive == true && u.Id != target.Id);
 
-                if(!anotherAdminExist)
+                if (!anotherAdminExist)
                 {
                     throw new InvalidOperationException("Cannot deactivate last admin!");
                 }
             }
 
             target.IsActive = false;
-
+            target.UpdatedAt = DateTime.UtcNow;
             await _db.SaveChangesAsync();
 
+            return true;
+        }
+
+        public async Task<bool> ActivateAsync(int id, int performedByUserId)
+        {
+            var admin = Domain.Constants.Roles.Admin;
+
+            var performer = await _db.Users.AsNoTracking()
+                .FirstOrDefaultAsync(u => u.Id == performedByUserId);
+
+            if (performer == null || !string.Equals(performer.Role, admin, StringComparison.OrdinalIgnoreCase))
+            {
+                throw new UnauthorizedAccessException();
+            }
+
+            var target = await _db.Users.FirstOrDefaultAsync(u => u.Id == id);
+            if (target == null)
+                return false;
+
+            if (target.IsActive)
+                return true;
+
+            target.IsActive = true;
+            target.UpdatedAt = DateTime.UtcNow;
+            await _db.SaveChangesAsync();
             return true;
         }
 

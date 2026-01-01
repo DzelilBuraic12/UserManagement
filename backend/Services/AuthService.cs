@@ -14,7 +14,7 @@ namespace UserManagement.Services
 {
     using DomainUser = UserManagement.Domain.Entities.User;
 
-    public class AuthService :IAuthService
+    public class AuthService : IAuthService
     {
         private readonly AppDbContext _db;
         private readonly IPasswordHasher<DomainUser> _passwordHasher;
@@ -62,7 +62,7 @@ namespace UserManagement.Services
 
             var validation = await _loginValidator.ValidateAsync(loginDto);
 
-            if(!validation.IsValid)
+            if (!validation.IsValid)
             {
                 throw new ValidationException(validation.Errors);
             }
@@ -128,9 +128,14 @@ namespace UserManagement.Services
 
             var result = new AuthResultDto
             {
+                Id = user.Id,
                 AccessToken = accessToken,
                 RefreshToken = refreshToken,
-                ExpiresAt = DateTime.UtcNow.AddMinutes(int.Parse(_config["Jwt:AccessTokenExpirationMinutes"]))
+                ExpiresAt = DateTime.UtcNow.AddMinutes(int.Parse(_config["Jwt:AccessTokenExpirationMinutes"])),
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Email = user.Email,
+                Role = user.Role
             };
 
             return result;
@@ -138,7 +143,7 @@ namespace UserManagement.Services
 
         public async Task<AuthResultDto> RefreshAsync(string refreshToken)
         {
-            
+
             if (string.IsNullOrWhiteSpace(refreshToken))
             {
                 throw new UnauthorizedAccessException("Refresh token is requierd.");
@@ -153,7 +158,7 @@ namespace UserManagement.Services
                 throw new UnauthorizedAccessException("Invalid refresh token.");
             }
 
-            if(token.ExpiresAt < DateTime.UtcNow)
+            if (token.ExpiresAt < DateTime.UtcNow)
             {
                 throw new UnauthorizedAccessException("Refresh token has expired.");
             }
@@ -226,7 +231,7 @@ namespace UserManagement.Services
         {
             var validation = await _registerValidator.ValidateAsync(dto);
 
-            if(!validation.IsValid)
+            if (!validation.IsValid)
             {
                 throw new ValidationException(validation.Errors);
             }
@@ -235,7 +240,7 @@ namespace UserManagement.Services
 
             var exist = await _db.Users.AnyAsync(u => u.Email == normalizedEmail);
 
-            if(exist)
+            if (exist)
             {
                 throw new ValidationException("Email already exists.");
             }
@@ -244,7 +249,7 @@ namespace UserManagement.Services
             user.Email = normalizedEmail;
 
             user.FirstName = CapitalizeFirstLetter(dto.FirstName);
-            user.LastName = CapitalizeFirstLetter( dto.LastName);
+            user.LastName = CapitalizeFirstLetter(dto.LastName);
 
             user.Role = Domain.Constants.Roles.User;
             user.IsActive = true;
@@ -260,26 +265,26 @@ namespace UserManagement.Services
         {
             var validation = await _changePasswordValidator.ValidateAsync(dto);
 
-            if(!validation.IsValid)
+            if (!validation.IsValid)
             {
                 throw new ValidationException(validation.Errors);
             }
 
             var user = await _db.Users.FirstOrDefaultAsync(u => u.Id == userId);
 
-            if(user == null)
+            if (user == null)
             {
                 return false;
             }
 
-            var result =  _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, dto.CurrentPassword);
+            var result = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, dto.CurrentPassword);
 
-            if(result != PasswordVerificationResult.Success)
+            if (result != PasswordVerificationResult.Success)
             {
                 throw new UnauthorizedAccessException("Current password is incorrect.");
             }
 
-            if(dto.NewPassword == dto.CurrentPassword)
+            if (dto.NewPassword == dto.CurrentPassword)
             {
                 throw new ValidationException("New password must be different from old password.");
             }
@@ -296,7 +301,7 @@ namespace UserManagement.Services
 
         public async Task<bool> ResetPasswordStartAsync(string email)
         {
-            if(string.IsNullOrWhiteSpace(email))
+            if (string.IsNullOrWhiteSpace(email))
             {
                 return false;
             }
@@ -310,7 +315,7 @@ namespace UserManagement.Services
                 return false;
             }
 
-            if(!user.IsActive)
+            if (!user.IsActive)
             {
                 return false;
             }
@@ -319,7 +324,7 @@ namespace UserManagement.Services
 
             var oldTokens = await _db.PasswordResetTokens.Where(p => p.UserId == user.Id && !p.IsUsed && p.ExpiresAt > DateTime.UtcNow).ToListAsync();
 
-            foreach(var oldToken in oldTokens)
+            foreach (var oldToken in oldTokens)
             {
                 oldToken.IsUsed = true;
             }
@@ -343,19 +348,19 @@ namespace UserManagement.Services
         {
             var validation = await _resetPasswordValidator.ValidateAsync(dto);
 
-            if(!validation.IsValid)
+            if (!validation.IsValid)
             {
                 throw new ValidationException(validation.Errors);
             }
 
             var resetToken = await _db.PasswordResetTokens.Include(rt => rt.User).FirstOrDefaultAsync(rt => rt.Token == dto.Token);
 
-            if(resetToken == null)
+            if (resetToken == null)
             {
                 return false;
             }
 
-            if(resetToken.ExpiresAt < DateTime.UtcNow)
+            if (resetToken.ExpiresAt < DateTime.UtcNow)
             {
                 return false;
             }
@@ -367,12 +372,12 @@ namespace UserManagement.Services
 
             var user = resetToken.User;
 
-            if(user == null)
+            if (user == null)
             {
                 return false;
             }
 
-            if(!user.IsActive)
+            if (!user.IsActive)
             {
                 return false;
             }

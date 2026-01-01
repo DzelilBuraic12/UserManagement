@@ -52,15 +52,15 @@ namespace UserManagement.Controllers
             }
             catch (ValidationException ex)
             {
-                return BadRequest(new {errors = ex.Errors.Select(e => e.ErrorMessage)});
+                return BadRequest(new { errors = ex.Errors.Select(e => e.ErrorMessage) });
             }
-            catch(UnauthorizedAccessException ex)
+            catch (UnauthorizedAccessException ex)
             {
                 return Unauthorized(new { message = ex.Message });
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                return StatusCode(500, new { message = "An error occurred during login." , error = ex.Message});
+                return StatusCode(500, new { message = "An error occurred during login.", error = ex.Message });
             }
         }
 
@@ -74,17 +74,17 @@ namespace UserManagement.Controllers
                 var result = await _authService.RefreshAsync(request.RefreshToken);
                 return Ok(result);
             }
-            catch(ValidationException ex)
+            catch (ValidationException ex)
             {
                 return BadRequest(new { errors = ex.Errors.Select(e => e.ErrorMessage) });
             }
-            catch(UnauthorizedAccessException ex)
+            catch (UnauthorizedAccessException ex)
             {
                 return Unauthorized(new { message = ex.Message });
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                return StatusCode(500, new { message = "An error occurred during token refresh.", error = ex.Message});
+                return StatusCode(500, new { message = "An error occurred during token refresh.", error = ex.Message });
             }
         }
 
@@ -98,8 +98,8 @@ namespace UserManagement.Controllers
             {
                 var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
                 var result = await _authService.ChangePasswordAsync(userId, dto);
-                
-                if(result)
+
+                if (result)
                 {
                     return Ok(new { message = "Password changed successfully." });
                 }
@@ -125,7 +125,7 @@ namespace UserManagement.Controllers
         //POST /api/auth/reset-password/start
         [HttpPost("reset-password/start")]
         [AllowAnonymous]
-        public async Task<IActionResult> ResetPasswordStartAsync([FromBody] ResetPasswordStartRequest request )
+        public async Task<IActionResult> ResetPasswordStartAsync([FromBody] ResetPasswordStartRequest request)
         {
             try
             {
@@ -137,7 +137,7 @@ namespace UserManagement.Controllers
             {
                 return BadRequest(new { errors = ex.Errors.Select(e => e.ErrorMessage) });
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return StatusCode(500, new { message = "An error occurred during reset password.", error = ex.Message });
             }
@@ -162,7 +162,7 @@ namespace UserManagement.Controllers
             }
             catch (ValidationException ex)
             {
-                return BadRequest(new { errors = ex.Errors.Select(e => e.ErrorMessage)});
+                return BadRequest(new { errors = ex.Errors.Select(e => e.ErrorMessage) });
             }
             catch (Exception ex)
             {

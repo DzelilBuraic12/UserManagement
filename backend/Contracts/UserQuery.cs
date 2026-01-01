@@ -2,7 +2,7 @@
 {
     public class UserQuery
     {
-        public string? Search {  get; set; }
+        public string? Search { get; set; }
         public string? Role { get; set; }
         public bool? IsActive { get; set; }
         public bool? IsDeleted { get; set; }

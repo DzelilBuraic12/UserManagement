@@ -42,9 +42,26 @@ namespace UserManagement.Controllers
             }
         }
 
+        //GET /api/users/all
+
+        [HttpGet("all")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetAllUsersAsync()
+        {
+            try
+            {
+                var users = await _userService.GetAllUsersAsync();
+                return Ok(users);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred", error = ex.Message });
+            }
+        }
+
         //GET /api/users
         [HttpGet]
-        [Authorize(Roles ="Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAllAsync([FromQuery] UserQuery query)
         {
             try
@@ -57,6 +74,16 @@ namespace UserManagement.Controllers
                 return StatusCode(500, new { message = "An error occurred during get all users.", error = ex.Message });
             }
         }
+
+        //GET /api/users/technicians
+        [HttpGet("technicians")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetTechniciansAsync()
+        {
+            var techs = await _userService.GetTechniciansAsync();
+            return Ok(techs);
+        }
+
 
         //GET /api/users/id
         [HttpGet("{id}")]
@@ -99,6 +126,7 @@ namespace UserManagement.Controllers
             }
         }
 
+
         //PUT /api/users/{id}
         [HttpPut("{id}")]
         [Authorize]
@@ -111,11 +139,11 @@ namespace UserManagement.Controllers
 
                 if (result)
                 {
-                    return Ok(new { message = "User update successfully."});
+                    return Ok(new { message = "User update successfully." });
                 }
                 else
                 {
-                    return NotFound(new { message = "User not found."});
+                    return NotFound(new { message = "User not found." });
                 }
             }
             catch (ValidationException ex)
@@ -132,31 +160,6 @@ namespace UserManagement.Controllers
             }
         }
 
-        //DELETE /api/users/{id}
-        [HttpDelete("{id}")]
-        [Authorize(Roles = Roles.Admin)]
-        public async Task<IActionResult> Delete(int id)
-        {
-            try
-            {
-                int performedByUserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
-                var result = await _userService.DeleteAsync(id, performedByUserId);
-
-                if (result)
-                {
-                    return Ok(new { message = "User deleted successfully."});
-                }
-                else
-                {
-                    return NotFound(new { message = "User not found"});
-                }
-            }
-            catch(Exception ex)
-            {
-                return StatusCode(500, new { message = "An error occurred during delete.", error = ex.Message });
-            }
-        }
-
         //POST /api/users/{id}/assign-role
         [HttpPost("{id}/assign-role")]
         [Authorize(Roles = Roles.Admin)]
@@ -168,18 +171,18 @@ namespace UserManagement.Controllers
                 var result = await _userService.AssignRoleAsync(id, dto.Role, performedByUserId);
                 if (result)
                 {
-                    return Ok(new { message = "Role assigned successfully."});
+                    return Ok(new { message = "Role assigned successfully." });
                 }
                 else
                 {
-                    return NotFound(new { message = "User not found."});
+                    return NotFound(new { message = "User not found." });
                 }
             }
-            catch(ValidationException ex)
+            catch (ValidationException ex)
             {
                 return BadRequest(new { errors = ex.Errors.Select(e => e.ErrorMessage) });
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return StatusCode(500, new { message = "An error occurred during assign.", error = ex.Message });
             }
@@ -196,17 +199,37 @@ namespace UserManagement.Controllers
                 var result = await _userService.DeactivateAsync(id, performedByUserId);
 
                 if (result)
-                { 
-                    return Ok(new { message = "User deactivated successfully."}); 
+                {
+                    return Ok(new { message = "User deactivated successfully." });
                 }
                 else
                 {
-                    return NotFound(new { message = "User not found"});
+                    return NotFound(new { message = "User not found" });
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return StatusCode(500, new { message = "An error occurred during deactivate.", error = ex.Message });
+            }
+        }
+
+        [HttpPost("{id}/activate")]
+        [Authorize(Roles = Roles.Admin)]
+        public async Task<IActionResult> Activate(int id)
+        {
+            try
+            {
+                var performedByUserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+                var result = await _userService.ActivateAsync(id, performedByUserId);
+
+                if (result)
+                    return Ok(new { message = "User activated successfully." });
+                else
+                    return NotFound(new { message = "User not found" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred durring activate.", error = ex.Message });
             }
         }
     }

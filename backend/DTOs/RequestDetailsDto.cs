@@ -11,5 +11,7 @@
         public DateTime? DueDate { get; set; }
         public string CreatedByName { get; set; }
         public string? TechnicianName { get; set; }
+        public int CreatedById { get; set; }
+        public int? TechnicianId { get; set; }
     }
 }

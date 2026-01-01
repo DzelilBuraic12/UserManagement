@@ -7,6 +7,8 @@
         public string StatusName { get; set; }
         public string Priority { get; set; }
         public DateTime CreatedAt { get; set; }
+        public DateTime DueDate { get; set; }
         public string? TechnicianName { get; set; }
+        public int CreatedById { get; set; }
     }
 }
