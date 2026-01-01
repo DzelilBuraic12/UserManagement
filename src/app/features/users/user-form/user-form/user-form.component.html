@@ -1,0 +1,67 @@
+<div class="user-form-page">
+  <header class="user-form-header">
+    <h2>{{ isEditMode ? 'Edit User' : 'Add User' }}</h2>
+  </header>
+
+  <form [formGroup]="userForm" (ngSubmit)="onSubmit()">
+    <div *ngIf="errorMessage" class="error-message">
+      <p>{{ errorMessage }}</p>
+    </div>
+
+    <div class="form-group">
+      <label>First Name</label>
+      <input type="text" formControlName="firstName" />
+      <div *ngIf="firstName?.invalid && firstName?.touched">
+        <p *ngIf="firstName?.errors?.['required']">First name is required.</p>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Last Name</label>
+      <input type="text" formControlName="lastName" />
+      <div *ngIf="lastName?.invalid && lastName?.touched">
+        <p *ngIf="lastName?.errors?.['required']">Last name is required.</p>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Email</label>
+      <input type="email" formControlName="email" />
+      <div *ngIf="email?.invalid && email?.touched">
+        <p *ngIf="email?.errors?.['required']">Email is required.</p>
+        <p *ngIf="email?.errors?.['email']">Invalid email format.</p>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Role</label>
+      <select formControlName="role">
+        <option value="Admin">Admin</option>
+        <option value="User">User</option>
+        <option value="Technician">Technician</option>
+      </select>
+    </div>
+
+    <div class="form-group" *ngIf="!isEditMode">
+      <label>Password</label>
+      <input type="password" formControlName="password" />
+      <div *ngIf="password?.invalid && password?.touched">
+        <p *ngIf="password?.errors?.['required']">Required</p>
+        <p *ngIf="password?.errors?.['minlength']">Min 6 chars.</p>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="button" class="btn-secondary" (click)="goBack()">
+        Cancel
+      </button>
+      <button
+        type="submit"
+        class="btn-primary"
+        [disabled]="userForm.invalid || isLoading"
+      >
+        {{ isLoading ? 'Saving...' : 'Save' }}
+      </button>
+    </div>
+  </form>
+</div>

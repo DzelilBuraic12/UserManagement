@@ -1,0 +1,200 @@
+<div class="dashboard-container">
+  <header class="dashboard-header">
+    <div>
+      <h1>Welcome, {{ currentUser?.firstName }}</h1>
+      <p class="subtitle" *ngIf="currentUser?.role === 'Admin' || currentUser?.role === 'Technician'">
+        Have a quick look at your tickets overview.
+      </p>
+      <p class="subtitle" *ngIf="currentUser?.role === 'User'">
+        Track your support requests and their status.
+      </p>
+    </div>
+
+    <div class="user-dropdown" *ngIf="currentUser">
+      <div class="user-avatar">
+        {{ currentUser.firstName?.charAt(0) }}{{ currentUser.lastName?.charAt(0) }}
+      </div>
+      <div class="user-details">
+        <p class="user-name">{{ currentUser.firstName }} {{ currentUser.lastName }}</p>
+        <p class="user-role">{{ currentUser.role }}</p>
+      </div>
+    </div>
+  </header>
+
+  <div class="main-grid">
+    <section *ngIf="summary" class="summary-grid">
+      <div class="summary-card open">
+        <div class="card-header">
+          <span class="card-icon">📂</span>
+          <h3>Open</h3>
+        </div>
+        <p class="card-number">{{ summary.open }}</p>
+        <span class="card-trend up" [ngClass]="{
+          'up': dashboardSummary.trends.open > 0,
+          'down': dashboardSummary.trends.open < 0,
+          'neutral': dashboardSummary.trends.open === 0
+        }"
+         *ngIf="currentUser?.role !== 'User'">
+         {{ formatTrend(dashboardSummary.trends.open) }}
+        </span>
+      </div>
+
+      <div class="summary-card in-progress">
+        <div class="card-header">
+          <span class="card-icon">⚙️</span>
+          <h3>In Progress</h3>
+        </div>
+        <p class="card-number">{{ summary.inProgress }}</p>
+        <span class="card-trend" 
+          [ngClass]="{
+            'up': dashboardSummary.trends.inProgress > 0, 
+            'down': dashboardSummary.trends.inProgress < 0, 
+            'neutral': dashboardSummary.trends.inProgress === 0
+          }"
+          *ngIf="currentUser?.role !== 'User'">
+          {{ formatTrend(dashboardSummary.trends.inProgress) }}
+    </span>
+      </div>
+
+      <div class="summary-card resolved">
+        <div class="card-header">
+          <span class="card-icon">✅</span>
+          <h3>Resolved</h3>
+        </div>
+        <p class="card-number">{{ summary.resolved }}</p>
+        <span class="card-trend" 
+          [ngClass]="{
+            'up': dashboardSummary.trends.resolved > 0, 
+            'down': dashboardSummary.trends.resolved < 0, 
+            'neutral': dashboardSummary.trends.resolved === 0
+          }"
+          *ngIf="currentUser?.role !== 'User'">
+          {{ formatTrend(dashboardSummary.trends.resolved) }}
+    </span>
+      </div>
+
+      <div class="summary-card closed">
+        <div class="card-header">
+          <span class="card-icon">🔒</span>
+          <h3>Closed</h3>
+        </div>
+        <p class="card-number">{{ summary.closed }}</p>
+        <span class="card-trend" 
+          [ngClass]="{
+            'up': dashboardSummary.trends.closed > 0, 
+            'down': dashboardSummary.trends.closed < 0, 
+            'neutral': dashboardSummary.trends.closed === 0
+          }"
+          *ngIf="currentUser?.role !== 'User'">
+          {{ formatTrend(dashboardSummary.trends.closed) }}
+    </span>
+      </div>
+    </section>
+
+    <section class="recent-activity">
+      <h3 *ngIf="currentUser?.role === 'Admin' || currentUser?.role === 'Technician'">📋 Recent Activity</h3>
+      <h3 *ngIf="currentUser?.role === 'User'">📋 My Recent Activity</h3>
+      <div class="activity-item" *ngFor="let activity of recentActivities">
+        <span class="activity-dot" [class]="activity.type"></span>
+        <div class="activity-content">
+          <p class="activity-text">{{ activity.message }}</p>
+          <span class="activity-time">{{ activity.time}}</span>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <section class="quick-stats" *ngIf="currentUser?.role === 'Admin' || currentUser?.role === 'Technician'">
+    <div class="stat-card">
+      <span class="stat-icon">🎯</span>
+      <div class="stat-content">
+        <span class="stat-number">94%</span>
+        <span class="stat-label">SLA Compliance</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <span class="stat-icon">⏱️</span>
+      <div class="stat-content">
+        <span class="stat-number">2.5h</span>
+        <span class="stat-label">Avg Response Time</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <span class="stat-icon">⭐</span>
+      <div class="stat-content">
+        <span class="stat-number">4.8/5</span>
+        <span class="stat-label">Customer Satisfaction</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <span class="stat-icon">✓</span>
+      <div class="stat-content">
+        <span class="stat-number">{{ resolvedToday}}</span>
+        <span class="stat-label">Resolved Today</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="bottom-grid" *ngIf="currentUser?.role === 'Admin' || currentUser?.role === 'Technician'">
+    <section class="priority-section">
+      <h3>🎯 Tickets by Priority</h3>
+      <div class="priority-bars">
+        <div class="priority-item">
+          <div class="priority-header">
+            <span class="priority-label high">High</span>
+            <span class="priority-count">{{ priorityBreakdown.high }}</span>
+          </div>
+          <div class="bar-container">
+            <div class="bar high" [style.width.%]="calculateWidth(priorityBreakdown.high)"></div>
+          </div>
+        </div>
+        <div class="priority-item">
+          <div class="priority-header">
+            <span class="priority-label medium">Medium</span>
+            <span class="priority-count">{{ priorityBreakdown.normal}}</span>
+          </div>
+          <div class="bar-container">
+            <div class="bar medium" [style.width.%]="calculateWidth(priorityBreakdown.normal)"></div>
+          </div>
+        </div>
+        <div class="priority-item">
+          <div class="priority-header">
+            <span class="priority-label low">Low</span>
+            <span class="priority-count">{{ priorityBreakdown.low }}</span>
+          </div>
+          <div class="bar-container">
+            <div class="bar low" [style.width.%]="calculateWidth(priorityBreakdown.low)"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="urgent-tickets">
+      <h3>⚠️ High Priority Tickets</h3>
+      <div class="tickets-table">
+        <div class="ticket-row header">
+          <span class="ticket-id">ID</span>
+          <span class="ticket-title">Title</span>
+          <span class="ticket-assignee">Assigned To</span>
+          <span class="ticket-age">Age</span>
+        </div>
+        <div class="ticket-row" *ngFor="let ticket of highPriorityTickets">
+          <span class="ticket-id">#{{ ticket.id }}</span>
+          <span class="ticket-title">{{ ticket.title }}</span>
+          <span class="ticket-assignee">{{ ticket.assignedTo}}</span>
+          <span class="ticket-age">{{ ticket.age }}</span>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <section class="actions-row">
+    <div class="all-actions">
+      <button *ngIf="currentUser?.role === 'User'"
+              (click)="createTicket()"
+              class="btn-primary">
+        Create New Ticket
+      </button>
+    </div>
+  </section>
+</div>

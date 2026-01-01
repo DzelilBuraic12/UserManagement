@@ -1,0 +1,60 @@
+<div *ngIf="isLoading" class="loading">Loading ticket...</div>
+
+<div *ngIf="errorMessage" class="error">{{ errorMessage }}</div>
+
+<div *ngIf="message && !isLoading" class="success" role="alert">
+  <p>{{ message }}</p>
+</div>
+<form [formGroup]="form" (ngSubmit)="submit()" *ngIf="!isLoading">
+  <div class="form-group">
+    <label for="title">Title:</label>
+    <input type="text" id="title" formControlName="title">
+    <div *ngIf="form.get('title')?.invalid && form.get('title')?.touched" class="error">
+      Title is required
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label for="description">Description:</label>
+    <textarea id="description" formControlName="description" rows="4"></textarea>
+  </div>
+
+  <div class="form-group" *ngIf="authService.isAdmin() || authService.isTechnician()">
+    <label for="statusId">Status:</label>
+    <select id="statusId" formControlName="statusId">
+      <option value="null">Select status</option>
+      <option [ngValue]="1">Open</option>
+      <option [ngValue]="2">In Progress</option>
+      <option [ngValue]="3">Resolved</option>
+      <option [ngValue]="4">Closed</option>
+    </select>
+    <div *ngIf="form.get('statusId')?.invalid && form.get('statusId')?.touched" class="error">
+      Status is required
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label for="dueDate">Due Date:</label>
+    <input type="date" id="dueDate" formControlName="dueDate">
+    <div *ngIf="form.get('dueDate')?.invalid && form.get('dueDate')?.touched" class="error">
+      Due date is required
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label for="priority">Priority:</label>
+    <select id="priority" formControlName="priority">
+      <option value="">Select priority</option>
+      <option value="Low">Low</option>
+      <option value="Normal">Normal</option>
+      <option value="High">High</option>
+    </select>
+  </div>
+
+  <div class="form-actions">
+    <button type="button" (click)="goBack()" class="btn-secondary">Cancel</button>
+    <button type="submit" [disabled]="form.invalid" class="btn-primary">
+      {{ ticketId > 0 ? 'Update Ticket' : 'Create Ticket' }}
+    </button>
+  </div>
+</form>

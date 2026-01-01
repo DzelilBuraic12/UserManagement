@@ -1,0 +1,170 @@
+<div class="ticket-list-container">
+  <div class="page-header">
+    <div class="header-content">
+      <div class="header-left">
+        <h1 class="page-title">🎫 My Tickets</h1>
+        <p class="page-subtitle">Manage and track your support requests</p>
+      </div>
+      <button *ngIf="authService.isUser() || authService.isAdmin()" 
+              routerLink="/tickets/create" 
+              class="btn-create">
+        <span class="btn-icon">+</span>
+        Create New Ticket
+      </button>
+    </div>
+  </div>
+
+  <div class="filters-bar">
+    <div class="filters-row">
+      <div class="filter-item">
+        <label class="filter-label">Status</label>
+        <select [(ngModel)]="selectedStatusId" class="filter-select">
+          <option [ngValue]="0">All Statuses</option>
+          <option [ngValue]="1">📂 Open</option>
+          <option [ngValue]="2">⚙️ In Progress</option>
+          <option [ngValue]="3">✅ Resolved</option>
+          <option [ngValue]="4">🔒 Closed</option>
+        </select>
+      </div>
+
+      <div class="filter-item filter-search">
+        <label class="filter-label">Search</label>
+        <div class="search-wrapper">
+          <span class="search-icon">🔍</span>
+          <input
+            type="text"
+            [(ngModel)]="searchTerm"
+            placeholder="Search tickets..."
+            (keyup.enter)="loadTickets()"
+            class="search-input"
+          />
+        </div>
+      </div>
+
+      <div class="filter-actions">
+        <button (click)="loadTickets()" class="btn-apply">Apply</button>
+        <button (click)="clearFilters()" class="btn-clear">Clear</button>
+        <button (click)="toggleHistory()" class="btn-history">
+          {{ showHistory ? '👁️ Hide Closed' : '📋 Show All' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="alert-success" *ngIf="message" role="alert">
+    <span class="alert-icon">✅</span>
+    {{ message }}
+  </div>
+
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Loading your tickets...</p>
+  </div>
+
+  <div *ngIf="!loading && tickets.length > 0" class="main-content">
+    <div class="table-card">
+      <div class="table-wrapper">
+        <table class="tickets-table">
+          <thead>
+            <tr>
+              <th class="col-title">Title</th>
+              <th class="col-status">Status</th>
+              <th class="col-priority">Priority</th>
+              <th class="col-assigned">Assigned To</th>
+              <th class="col-date">Due Date</th>
+              <th class="col-date">Created</th>
+              <th class="col-actions">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let t of tickets"
+                class="ticket-row"
+                (click)="goToTicketDetail(t.id)">
+              <td class="col-title">
+                <div class="title-wrapper">
+                  <span class="ticket-icon">🎫</span>
+                  <span class="ticket-title">{{ t.title }}</span>
+                </div>
+              </td>
+              <td class="col-status">
+                <span class="badge badge-status" [ngClass]="'status-' + t.statusName.toLowerCase()">
+                  <span class="badge-dot"></span>
+                  {{ t.statusName }}
+                </span>
+              </td>
+              <td class="col-priority">
+                <span class="badge badge-priority" [ngClass]="'priority-' + t.priority.toLowerCase()">
+                  <span *ngIf="t.priority === 'High'">🔴</span>
+                  <span *ngIf="t.priority === 'Normal'">🟡</span>
+                  <span *ngIf="t.priority === 'Low'">🟢</span>
+                  {{ t.priority }}
+                </span>
+              </td>
+              <td class="col-assigned">
+                <div *ngIf="t.technicianName" class="assigned-user">
+                  <span class="user-icon">👤</span>
+                  <span>{{ t.technicianName }}</span>
+                </div>
+                <span *ngIf="!t.technicianName" class="unassigned">Not assigned</span>
+              </td>
+              <td class="col-date">
+                {{ t.dueDate | date:'MMM d, y' }}
+              </td>
+              <td class="col-date">
+                {{ t.createdAt | date:'MMM d, y' }}
+              </td>
+              <td class="col-actions">
+                <button class="btn-view" 
+                        routerLink="/tickets/{{ t.id }}"
+                        (click)="$event.stopPropagation()">
+                  View
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="pagination-bar" *ngIf="total > 0">
+        <div class="pagination-info">
+          Showing <strong>{{ ((page - 1) * pageSize + 1) }}</strong> to 
+          <strong>{{ page * pageSize > total ? total : page * pageSize }}</strong> of 
+          <strong>{{ total }}</strong> tickets
+        </div>
+
+        <div class="pagination-controls">
+          <button *ngIf="page > 1"
+                  (click)="goToPreviousPage()"
+                  class="btn-page">
+            ← Previous
+          </button>
+          <span class="page-number">Page {{ page }}</span>
+          <button *ngIf="page * pageSize < total"
+                  (click)="goToNextPage()"
+                  class="btn-page">
+            Next →
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="!loading && tickets.length === 0 && total === 0" class="empty-state">
+    <div class="empty-icon">📭</div>
+    <h3>No tickets found</h3>
+    <p *ngIf="authService.isUser() || authService.isAdmin()">
+      Try adjusting your filters or create a new ticket.
+    </p>
+    <button *ngIf="authService.isUser() || authService.isAdmin()" 
+            routerLink="/tickets/create" 
+            class="btn-create-empty">
+      + Create New Ticket
+    </button>
+  </div>
+
+  <div class="footer-actions">
+    <button (click)="goBack()" class="btn-back">
+      ← Back to Dashboard
+    </button>
+  </div>
+</div>

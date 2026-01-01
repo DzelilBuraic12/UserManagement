@@ -1,0 +1,135 @@
+.user-detail-container {
+  max-width: 700px;
+  margin: 32px auto;
+  padding: 24px;
+  font-size: 14px;
+  color: #0f172a;
+}
+
+/* Loading / error poruke – isti stil kao drugdje */
+
+.loading,
+.error {
+  margin-bottom: 16px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.loading {
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+
+.error {
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+/* Kartica */
+
+.user-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 20px 18px 18px;
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.06);
+}
+
+/* Header */
+
+.user-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+  gap: 12px;
+}
+
+.user-header h2 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+/* Role badge */
+
+.role-badge {
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  background: #e0f2fe;
+  color: #0369a1;
+}
+
+/* Detalji */
+
+.user-details {
+  padding-top: 8px;
+  border-top: 1px solid #e5e7eb;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 24px;
+}
+
+.detail-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.detail-row label {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #6b7280;
+}
+
+.detail-row p {
+  margin: 0;
+  font-size: 14px;
+  color: #111827;
+}
+
+/* Akcije */
+
+.user-actions {
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Dugme – koristi globalne klase, ovdje je fallback */
+
+.btn-secondary {
+  border: none;
+  padding: 8px 14px;
+  border-radius: 0;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  background: #e5e7eb;
+  color: #111827;
+  transition: background-color 0.15s ease, transform 0.1s ease;
+}
+
+.btn-secondary:hover {
+  background: #d1d5db;
+  transform: translateY(-1px);
+}
+
+/* Responsive */
+
+@media (max-width: 768px) {
+  .user-detail-container {
+    padding: 16px;
+  }
+
+  .user-details {
+    grid-template-columns: 1fr;
+  }
+}
