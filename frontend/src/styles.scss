@@ -1,0 +1,90 @@
+html, body {
+  font-family: "Inter", sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+.btn-primary,
+.btn-secondary,
+.btn-success,
+.btn-info,
+.btn-danger,
+.btn-pagination,
+.btn-small,
+.btn-outline {
+  border: none;
+  padding: 8px 14px;
+  border-radius: 0; /* oštre ivice */
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.15s ease, color 0.15s ease,
+    box-shadow 0.15s ease, transform 0.1s ease;
+}
+
+.btn-primary {
+  background: #2563eb;
+  color: #ffffff;
+}
+.btn-primary:hover {
+  background: #1d4ed8;
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.4);
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background: #e5e7eb;
+  color: #111827;
+}
+.btn-secondary:hover {
+  background: #d1d5db;
+}
+
+/* Uspjeh – zelena */
+.btn-success {
+  background: #16a34a;
+  color: #ffffff;
+}
+.btn-success:hover {
+  background: #15803d;
+}
+
+/* Info – tirkizno/plava */
+.btn-info {
+  background: #0ea5e9;
+  color: #ffffff;
+}
+.btn-info:hover {
+  background: #0284c7;
+}
+
+/* Danger – crvena */
+.btn-danger {
+  background: #dc2626;
+  color: #ffffff;
+}
+.btn-danger:hover {
+  background: #b91c1c;
+}
+
+/* Pagination / small / outline varijante */
+
+.btn-pagination {
+  padding: 6px 12px;
+  font-size: 13px;
+}
+
+.btn-small {
+  padding: 6px 10px;
+  font-size: 13px;
+}
+
+.btn-outline {
+  background: transparent;
+  border: 1px solid #d1d5db;
+  color: #111827;
+}
+.btn-outline:hover {
+  background: #f3f4f6;
+}
+

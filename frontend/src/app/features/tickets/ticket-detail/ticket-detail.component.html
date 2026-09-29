@@ -1,0 +1,83 @@
+<div *ngIf="isLoading" class="loading">
+  <p>Loading ticket details...</p>
+</div>
+
+<div *ngIf="errorMessage && !isLoading" class="error">
+  <p>{{ errorMessage }}</p>
+  <button (click)="goBack()">Back to Tickets</button>
+</div>
+
+<div *ngIf="message && !isLoading" class="success" role="alert">
+  <p>{{ message }}</p>
+</div>
+
+<div *ngIf="ticket && !isLoading && !errorMessage" class="ticket-card">
+  <header class="ticket-header">
+    <h2>{{ ticket.title }}</h2>
+    <span class="status-badge">{{ ticket.statusName }}</span>
+  </header>
+
+  <section class="ticket-details">
+    <div class="detail-row description-row">
+      <label>Description:</label>
+      <p>{{ ticket.description }}</p>
+    </div>
+    <div class="detail-row">
+      <label>Priority:</label>
+      <p>{{ ticket.priority }}</p>
+    </div>
+    <div class="detail-row">
+      <label>Created:</label>
+      <p>{{ ticket.createdAt | date:'short' }}</p>
+    </div>
+    <div class="detail-row">
+      <label>Created by:</label>
+      <p>{{ ticket.createdByName }}</p>
+    </div>
+    <div class="detail-row">
+      <label>Technician:</label>
+      <p>{{ ticket.technicianName || 'Not assigned' }}</p>
+    </div>
+    <div class="detail-row">
+      <label>Due date:</label>
+      <p>{{ ticket.dueDate | date:'shortDate' }}</p>
+    </div>
+  </section>
+
+  <footer class="ticket-actions">
+    <button (click)="goBack()" class="btn-secondary">← Back to List</button>
+        
+    <div *ngIf="authService.isTechnician() && ticket.technicianId === authService.getCurrentUserId()" 
+          class="technician-actions">
+      <div class="action-group">
+        <label>Status:</label>
+        <select [(ngModel)]="selectedStatusId">
+          <option [ngValue]="2">In Progress</option>
+          <option [ngValue]="3">Resolved</option>
+        </select>
+        <button (click)="changeStatus(selectedStatusId)" class="btn-success">
+          Update Status
+        </button>
+      </div>
+    </div>
+    
+    <div *ngIf="authService.isAdmin()" class="admin-actions">
+      <button (click)="editTicket()" class="btn-primary">Edit Ticket</button>
+      
+      <div class="action-group" *ngIf="authService.isAdmin()">
+        <label>Assign Technician:</label>
+        <select [(ngModel)]="selectedTechnicianId">
+          <option [ngValue]="0">Select Technician</option>
+          <option *ngFor="let tech of technicians" 
+          [ngValue]="tech.id">
+          {{ tech.firstName }} {{ tech.lastName }}
+        </option>
+        </select>
+        <button (click)="assignTechnician(selectedTechnicianId)" 
+                [disabled]="selectedTechnicianId === 0" class="btn-info">
+          Assign
+        </button>
+      </div>
+    </div>
+  </footer>
+</div>

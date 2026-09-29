@@ -1,0 +1,41 @@
+<div class="user-detail-container">
+  <div *ngIf="isLoading" class="loading">
+    <p>Loading user details...</p>
+  </div>
+
+  <div *ngIf="errorMessage" class="error">
+    <p>{{ errorMessage }}</p>
+  </div>
+
+  <div *ngIf="user" class="user-card">
+    <header class="user-header">
+      <h2>{{ user.firstName }} {{ user.lastName }}</h2>
+      <span class="role-badge">{{ user.role }}</span>
+    </header>
+
+    <section class="user-details">
+      <div class="detail-row">
+        <label>First Name</label>
+        <p>{{ user.firstName }}</p>
+      </div>
+      <div class="detail-row">
+        <label>Last Name</label>
+        <p>{{ user.lastName }}</p>
+      </div>
+      <div class="detail-row">
+        <label>Email</label>
+        <p>{{ user.email }}</p>
+      </div>
+      <div class="detail-row">
+        <label>Role</label>
+        <p>{{ user.role }}</p>
+      </div>
+    </section>
+
+    <footer class="user-actions">
+      <button (click)="goBack()" class="btn-secondary">
+        ← Back to list
+      </button>
+    </footer>
+  </div>
+</div>

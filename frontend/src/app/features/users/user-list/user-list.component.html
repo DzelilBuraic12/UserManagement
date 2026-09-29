@@ -1,0 +1,173 @@
+<div class="user-list-container">
+  <div class="page-header">
+    <div class="header-content">
+      <div class="header-left">
+        <h1 class="page-title">👥 User Management</h1>
+        <p class="page-subtitle">Manage system users and their permissions</p>
+      </div>
+      <button
+        *ngIf="(currentUser$ | async)?.role === 'Admin'"
+        [routerLink]="['/users/create']"
+        class="btn-add-user">
+        <span class="btn-icon">+</span>
+        Add New User
+      </button>
+    </div>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon">👤</div>
+      <div class="stat-content">
+        <span class="stat-value">{{ getTotalUsers() }}</span>
+        <span class="stat-label">Total Users</span>
+      </div>
+    </div>
+    <div class="stat-card stat-active">
+      <div class="stat-icon">✅</div>
+      <div class="stat-content">
+        <span class="stat-value">{{ getActiveUsers() }}</span>
+        <span class="stat-label">Active</span>
+      </div>
+    </div>
+    <div class="stat-card stat-inactive">
+      <div class="stat-icon">⏸️</div>
+      <div class="stat-content">
+        <span class="stat-value">{{ getInactiveUsers() }}</span>
+        <span class="stat-label">Inactive</span>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="errorMessage" class="alert-error">
+    <span class="alert-icon">❌</span>
+    {{ errorMessage }}
+  </div>
+
+  <div class="filters-section">
+    <div class="filter-toggle">
+      <label class="toggle-label">
+        <input 
+          type="checkbox" 
+          [(ngModel)]="showOnlyActive" 
+          (change)="loadUsers()"
+          class="toggle-checkbox"
+        />
+        <span class="toggle-slider"></span>
+        <span class="toggle-text">Show only active users</span>
+      </label>
+    </div>
+  </div>
+
+  <div *ngIf="isLoading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Loading users...</p>
+  </div>
+
+  <div *ngIf="!isLoading" class="table-card">
+    <div class="table-wrapper">
+      <table class="users-table">
+        <thead>
+          <tr>
+            <th class="col-user">User</th>
+            <th class="col-email">Email</th>
+            <th class="col-role">Role</th>
+            <th class="col-status">Status</th>
+            <th class="col-actions">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let user of users" 
+              class="user-row"
+              [class.inactive]="!user.isActive">
+            <td class="col-user">
+              <div class="user-info">
+                <div class="user-avatar" [style.background]="getAvatarColor(user.firstName)">
+                  {{ user.firstName?.charAt(0) }}{{ user.lastName?.charAt(0) }}
+                </div>
+                <div class="user-details">
+                  <span class="user-name">{{ user.firstName }} {{ user.lastName }}</span>
+                  <span class="user-id">#{{ user.id }}</span>
+                </div>
+              </div>
+            </td>
+
+            <td class="col-email">
+              <div class="email-wrapper">
+                <span class="email-icon">✉️</span>
+                <span class="email-text">{{ user.email }}</span>
+              </div>
+            </td>
+
+            <td class="col-role">
+              <span class="role-badge" [ngClass]="'role-' + user.role.toLowerCase()">
+                <span class="role-icon">
+                  <span *ngIf="user.role === 'Admin'">👑</span>
+                  <span *ngIf="user.role === 'Technician'">🔧</span>
+                  <span *ngIf="user.role === 'User'">👤</span>
+                </span>
+                {{ user.role }}
+              </span>
+            </td>
+
+            <td class="col-status">
+              <span class="status-badge" [ngClass]="user.isActive ? 'status-active' : 'status-inactive'">
+                <span class="status-dot"></span>
+                {{ user.isActive ? 'Active' : 'Inactive' }}
+              </span>
+            </td>
+
+            <td class="col-actions">
+              <div class="action-buttons">
+                <button 
+                  [routerLink]="['/users', user.id]" 
+                  class="btn-action btn-view"
+                  title="View Details">
+                  👁️
+                </button>
+                <button 
+                  [routerLink]="['/users', user.id, 'edit']" 
+                  class="btn-action btn-edit"
+                  title="Edit User">
+                  ✏️
+                </button>
+                <button 
+                  *ngIf="user.isActive"
+                  (click)="deactivateUser(user.id)" 
+                  class="btn-action btn-deactivate"
+                  title="Deactivate User">
+                  ⏸️
+                </button>
+                <button 
+                  *ngIf="!user.isActive"
+                  (click)="activateUser(user.id)" 
+                  class="btn-action btn-activate"
+                  title="Activate User">
+                  ▶️
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div *ngIf="!isLoading && users.length === 0" class="empty-state">
+    <div class="empty-icon">👥</div>
+    <h3>No users found</h3>
+    <p>Try adjusting your filters or add a new user.</p>
+    <button 
+      *ngIf="(currentUser$ | async)?.role === 'Admin'"
+      [routerLink]="['/users/create']"
+      class="btn-create-empty">
+      + Add First User
+    </button>
+  </div>
+
+  <div class="footer-actions">
+    <button (click)="goBack()" class="btn-back">
+      ← Back to Dashboard
+    </button>
+  </div>
+</div>

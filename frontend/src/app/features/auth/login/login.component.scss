@@ -1,0 +1,161 @@
+.auth-container {
+  min-height: 100vh;
+  width: 100%;
+  background: #ffffff;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+}
+
+
+.auth-split {
+  width: 100%;
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+
+
+.auth-left {
+  position: relative;
+  background: linear-gradient(135deg, #2563eb, #1e40af);
+  color: #fff;
+  padding: 44px 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0% 41% 10% 42% / 10% 45% 0% 24%;
+
+}
+
+.auth-left-inner {
+  max-width: 360px;
+  padding: 40px 40px 48px;
+}
+
+.auth-eyebrow {
+  margin: 0 0 8px;
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  opacity: 0.85;
+}
+
+.auth-left-title {
+  margin: 0 0 12px;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.auth-left-text {
+  margin: 0 0 8px;
+  font-size: 14px;
+  line-height: 1.7;
+  opacity: 0.9;
+}
+
+.auth-right {
+  position: relative;
+  background: linear-gradient(135deg, #2563eb, #1e40af);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+.auth-right::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: #ffffff;
+  border-top-right-radius: 37%;
+}
+
+
+.auth-card {
+  position: relative;
+  z-index: 1;  /* forma iznad plavog oblika */
+  width: 100%;
+  max-width: 420px;
+  padding: 32px 28px 26px;
+}
+
+.auth-card h2 {
+  margin: 0 0 18px;
+  font-size: 24px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+/* tvé postojeće stilove za .form-group, .error-message, .form-actions, .auth-switch ostavi iste */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+
+.form-group label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.form-group input {
+  padding: 8px 10px;
+  border-radius: 4px;
+  border: 1px solid #d1d5db;
+  font-size: 14px;
+  font-family: inherit;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.3);
+}
+
+.error-message,
+.error-message p {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: #b91c1c;
+}
+
+.form-actions {
+  margin-top: 16px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.auth-switch {
+  margin-top: 14px;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.auth-switch a {
+  color: #2563eb;
+  text-decoration: none;
+}
+
+.auth-switch a:hover {
+  text-decoration: underline;
+}
+
+/* responsive: na mobitelu jedan ispod drugog */
+@media (max-width: 800px) {
+  .auth-split {
+    grid-template-columns: 1fr;
+  }
+
+  .auth-left {
+    min-height: 40vh;
+  }
+
+  .auth-card {
+    max-width: 100%;
+    padding: 24px 18px 20px;
+  }
+}

@@ -1,0 +1,60 @@
+<div class="app-container" *ngIf="isAuthenticated">
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <h2>Modern IT Helpdesk</h2>
+    </div>
+
+    <nav class="sidebar-nav">
+  <a routerLink="/dashboard" routerLinkActive="active" class="nav-item">
+    <span class="nav-icon">📊</span>
+    <span class="nav-label">Dashboard</span>
+  </a>
+
+  <a routerLink="/tickets" routerLinkActive="active" class="nav-item">
+    <span class="nav-icon">🎫</span>
+    <span class="nav-label">My Tickets</span>
+  </a>
+
+  <a *ngIf="currentUser?.role === 'Admin' || currentUser?.role === 'Technician'" 
+     routerLink="/tickets" 
+     routerLinkActive="active" 
+     class="nav-item">
+    <span class="nav-icon">📋</span>
+    <span class="nav-label">Manage Tickets</span>
+  </a>
+
+  <a *ngIf="currentUser?.role === 'Admin'" 
+     routerLink="/users" 
+     routerLinkActive="active" 
+     class="nav-item">
+    <span class="nav-icon">👥</span>
+    <span class="nav-label">Manage Users</span>
+  </a>
+</nav>
+
+
+    <div class="sidebar-footer">
+      <div class="user-info-sidebar" *ngIf="currentUser">
+        <div class="user-avatar-small">
+          {{ currentUser.firstName?.charAt(0) }}{{ currentUser.lastName?.charAt(0) }}
+        </div>
+        <div class="user-details-small">
+          <p class="user-name-small">{{ currentUser.firstName }}</p>
+          <p class="user-role-small">{{ currentUser.role }}</p>
+        </div>
+      </div>
+      <button (click)="logout()" class="logout-btn">
+        <span class="nav-icon">🚪</span>
+        <span>Logout</span>
+      </button>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    <router-outlet></router-outlet>
+  </main>
+</div>
+
+<div *ngIf="!isAuthenticated">
+  <router-outlet></router-outlet>
+</div>

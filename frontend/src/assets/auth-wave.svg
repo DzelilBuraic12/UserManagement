@@ -1,0 +1,16 @@
+<svg width="120" height="600" viewBox="0 0 120 600" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="fade" x1="0" x2="1" y1="0" y2="0">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.0"/>
+    </linearGradient>
+  </defs>
+  <path d="M0,0 
+           C40,40 40,80 0,120
+           C-40,160 -40,200 0,240
+           C40,280 40,320 0,360
+           C-40,400 -40,440 0,480
+           C40,520 40,560 0,600
+           L120,600 L120,0 Z"
+        fill="url(#fade)"/>
+</svg>
